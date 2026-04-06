@@ -3,6 +3,8 @@ Alternativa ao identificador_dense.py: treina com imagens (subpastas = pessoas),
 como treinar_cnn_faces_zero.py / fluxo CNN sobre pixels — sem embeddings FaceNet.
 
 Fluxo: carrega faces/, treina CNN (160x160), classifica foto nova com MTCNN + modelo.
+Grava modelo_dense_imagens.keras e dense_imagens_classes.json. Para só classificar
+sem treinar de novo, use classificar_dense_imagens.py.
 Não altera main.py.
 """
 
@@ -157,6 +159,33 @@ def treinar_modelo_imagens(data_dir, epochs = 25, batch_size = 8, val_split = 0.
     return model, class_names
 
 
+def carregar_modelo_salvo(
+    model_path: str | Path = OUT_MODEL,
+    meta_path: str | Path = OUT_META,
+) -> tuple[keras.Model, list[str], int]:
+    """
+    Carrega o modelo treinado e os metadados (nomes das classes, tamanho da imagem).
+    Use para inferência sem rodar treinar_modelo_imagens.
+    """
+    model_path = Path(model_path)
+    meta_path = Path(meta_path)
+    if not model_path.is_file():
+        raise FileNotFoundError(
+            f"Modelo não encontrado: {model_path.resolve()}. Treine antes com este script."
+        )
+    if not meta_path.is_file():
+        raise FileNotFoundError(
+            f"Metadados não encontrados: {meta_path.resolve()}. "
+            "Eles são gravados junto com o treino (dense_imagens_classes.json)."
+        )
+    model = keras.models.load_model(model_path)
+    with open(meta_path, encoding="utf-8") as f:
+        meta = json.load(f)
+    class_names = list(meta["class_names"])
+    img_size = int(meta.get("img_size", IMG))
+    return model, class_names, img_size
+
+
 def top_10_prediction(prob, labels) -> None:
     sorted_rank = (-prob).argsort()[:10]
     label_prob = {}
@@ -228,8 +257,11 @@ def classificar_imagem_aberta(
     limiar: float = 0.5,
     salvar: str | None = None,
     mostrar_plot: bool = True,
+    img_size: int | None = None,
 ):
-    imagem, faces, caixas = detectar_faces(caminho_imagem)
+    """img_size: lado do quadrado de face (deve bater com o treino); None usa IMG."""
+    t = img_size if img_size is not None else IMG
+    imagem, faces, caixas = detectar_faces(caminho_imagem, tamanho=(t, t))
     if not faces:
         print("Nenhuma face detectada na imagem.")
         return
@@ -283,7 +315,7 @@ if __name__ == "__main__":
     epochs = 25
     batch_size = 32
     val_split = 0.2
-    limiar = 0.60
+    limiar = 0.9
     mostrar_plot = True
     imagem = None  # ex.: "minha_foto.jpg" ou None para abrir o seletor
 

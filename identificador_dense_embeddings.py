@@ -269,9 +269,9 @@ def classificar_imagem_aberta(caminho_imagem,  model_vector_classifier, encoder 
 if __name__ == "__main__":
     csv_path = "faces.csv"
     epochs = 15
-    batch_size = 32
+    batch_size = 10
     test_size = 0.2
-    limiar = 0.60
+    limiar = 0.99
     mostrar_plot = True
     imagem = None  # ex.: "minha_foto.jpg" ou None para abrir o seletor
 
