@@ -105,8 +105,8 @@ Ambos são **fluxos alternativos** que **não substituem** `main.py`; servem par
 Em resumo:
 
 - **`identificador_dense_embeddings.py`**: continua no **espaço de embeddings FaceNet**; só troca o “cabeçote” de classificação por uma **MLP Keras** treinada com split treino/teste a partir do CSV, com curvas de loss/acurácia.
-- **`identificador_dense_imagens.py`**: **treina do zero** uma **CNN em imagens brutas** (como um fluxo estilo classificação por pixels), **sem** depender de `embeddings.py` para o aprendizado — aproxima a ideia de treinar uma rede sobre as faces recortadas, não sobre vetores pré-computados.
-
+- **`modelo_dense_imagens.py`**: **treina do zero** uma **CNN em imagens brutas** (como um fluxo estilo classificação por pixels), **sem** depender de `embeddings.py` para o aprendizado — aproxima a ideia de treinar uma rede sobre as faces recortadas, não sobre vetores pré-computados.
+- **`classificador_dense_imagens.py`**: **Classifica as imagens com os dados do treino**.
 ---
 
 ## Resumo visual do fluxo
