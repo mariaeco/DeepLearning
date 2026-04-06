@@ -1,0 +1,10 @@
+venv/
+*.jpg
+*.jpeg
+*.JPG
+*.JPEG
+*.csv
+*.CR2
+*.png
+*.PNG
+__pycache__/
